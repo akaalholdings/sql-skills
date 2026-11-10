@@ -53,3 +53,8 @@ Preflight reads `STRING_SPLIT` and user table-valued functions in FROM, JOIN, or
 An index benchmark runs unchanged SQL across A-B-A phases separated by DDL, so it cannot claim a same-snapshot rewrite proof. It requires stable, complete result fingerprints before, during, and after the index, plus proof that the candidate plan used the expected index. Data movement between phases makes the index result inconclusive.
 
 Runtime speed, plan similarity, result counts, and any other proxy must never be used to overclaim semantic proof.
+
+## Branching candidates and extra runs
+
+- A case whose executed branch is the unchanged original comes back as `unchanged_by_design` with `executed_branch`. It is not a failure and does not need a separate comparison.
+- A further run on a finalist (another parameter order, a shared plan): pass `measurement_only: true`. It can lower the verdict, never raise it.

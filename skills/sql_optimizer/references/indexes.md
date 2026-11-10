@@ -29,3 +29,9 @@ Call `review_workload_indexes(schema_name, table_names, query_ids, objective)` o
 - **Rowstore fact table scanned for aggregates.** Lead with a nonclustered columnstore index on the key and measure columns the query family reads, not with B-tree indexes. Keep `SUM` and `COUNT` on bare columns (aggregation-ordering reference). State the cost: every write also maintains the columnstore index, and a table takes only one. `get_tool_guide("columnstore")` has the detail.
 - **Filtered and computed-column options** need a filter that is true for every parameter value, deterministic expressions, and a write-cost review.
 - **Indexed view.** An indexed view is a setup change with write cost: measure it (sandbox reference), and give the covering index as the alternative.
+
+## Columnstore options and forbidden designs
+
+- **Ordered columnstore.** For a nonclustered columnstore test index (`kind: "nonclustered_columnstore"`), give `order_columns` when the query filters a range of one column, for example a date. The rows are sorted on build, so segment elimination skips most row groups. The order columns must be in the index column list. Sorting makes the build slower.
+- **Archive compression.** `data_compression: "COLUMNSTORE_ARCHIVE"` reads fewer pages and costs more CPU to decompress. Use it for cold, read-mostly data and measure both CPU and reads before you recommend it.
+- **Indexed views forbidden.** When `check_capabilities` returns `indexed_view_experiment.designs_forbidden: true`, or the brief says the client does not use indexed views, do not propose or test one. Go to the next design for the shape: a columnstore index for a fact scan and aggregate, a covering index with a set-based rewrite for the rest. Say once that the faster design exists and why it is not offered.

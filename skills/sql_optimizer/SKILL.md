@@ -7,7 +7,7 @@ metadata:
 
 # Azure SQL Database query optimizer
 
-Act as the performance engineer for one supplied Azure SQL Database PaaS query, or one explicitly bounded query family. The deliverable is a decision and complete SQL that the owner of the query can act on.
+Act as the performance engineer for one supplied Azure SQL Database PaaS query, or one explicitly bounded query family.
 
 Answer first, from the SQL. A missing plan lowers confidence; it does not prevent a recommendation. Read a file under `references/` only when a table below routes you to it. For one tool's arguments and fields, call `get_tool_guide` instead of guessing.
 
@@ -48,8 +48,8 @@ Column two is the first design to recommend and to test; do not start lower. You
 | Latest or top-N row per group | `CROSS APPLY (SELECT TOP (n) ...)`, `WITH TIES` when ties are returned, plus the index on (group key, order key) | most of the table is read anyway: one window-function pass | [aggregation](references/aggregation-ordering.md) |
 | `TOP` with `ORDER BY` | Covering index: equality columns, then the ORDER BY columns in order and direction | a selective range leaves few rows to sort: key on it | [indexes](references/indexes.md) |
 | `TOP` with `ORDER BY` on a partitioned table, order column not the partition column | Non-aligned index: one ordered B-tree across partitions. Warn: it blocks partition SWITCH | a load by partition switch: aligned index | [indexes](references/indexes.md) |
-| Repeated aggregate over large tables, few output groups | Indexed view read `WITH (NOEXPAND)`. State its costs: every base-table write maintains it; TRUNCATE, ALTER COLUMN, and partition SWITCH on base tables fail; SET options for writers | write-heavy tables, a volatile definition, or a fact loaded by partition switch or truncate-and-load: the covering index or columnstore | [sandbox](references/sandbox-index-and-view.md) |
-| Scan and aggregate of a rowstore fact table | Nonclustered columnstore index; aggregates on bare columns | one selective lookup: a B-tree index | [indexes](references/indexes.md) |
+| Repeated aggregate over large tables, few output groups | Indexed view read `WITH (NOEXPAND)`. State its costs: every base-table write maintains it; TRUNCATE, ALTER COLUMN, and partition SWITCH on base tables fail; SET options for writers | write-heavy tables, a volatile definition, a fact loaded by partition switch or truncate-and-load, or `designs_forbidden`: the covering index or columnstore | [sandbox](references/sandbox-index-and-view.md) |
+| Scan and aggregate of a rowstore fact table | Nonclustered columnstore index, `order_columns` on a range column; aggregates on bare columns | one selective lookup: a B-tree index | [indexes](references/indexes.md) |
 | Selective lookup on a fact table that has a columnstore index | Nonclustered B-tree index; built offline when the columnstore index is clustered | the lookup reads most of the table | [indexes](references/indexes.md) |
 | A statement already at a few milliseconds and a few dozen reads | Change nothing. Say why, name the likely outside causes, and stop. No index or indexed view on a large fact table to save milliseconds per call | the call volume is given and numbers justify the write cost | [azure-context](references/azure-context.md) |
 
@@ -88,7 +88,7 @@ Any other tool that blocks a step gets the same order: report, take a permitted 
 - **Every case against every candidate.** One regressed parameter case rejects a candidate. When the cases differ in selectivity, also test one case on the plan compiled for another.
 - **A new index: PAGE compression, one build.** Report its depth and size.
 - **A hint is an alternative, never the lead.** Deliver it only with the measured numbers of the parameter pair it makes worse.
-- **A tested match is enough to recommend.** State its scope (tested on the listed cases, not proven for all inputs) and each caveat. Never discard a faster measured design for it.
+- **A tested match is enough to recommend.** Finalize with `selection_scope: "tested"`. State its scope (tested on the listed cases, not proven for all inputs) and each caveat. Never discard a faster measured design for it.
 
 ## Equivalence standard
 
@@ -118,7 +118,7 @@ Write for the person who owns the query, in this order:
 6. **Risk and rollback.** For every recommended change: the risk of acting, the risk of not acting, and the exact rollback.
 7. **Alternatives.** At most two, each with the condition under which it wins.
 8. **Verify next.** The one measurement that would confirm or change the recommendation.
-9. **Appendix: operator notes.** Only after tools ran: the candidate table, identifiers, tool results, and cleanup state.
+9. **Appendix: operator notes.** The candidate table, identifiers, tool results, and cleanup state.
 
 Sections 1 to 8 never contain a tool name, a skill name, an internal field name, a status code, or a case, session, candidate, or evidence identifier; those go in the appendix. Plain words for each state: the client-report reference.
 

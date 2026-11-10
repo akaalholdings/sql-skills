@@ -36,7 +36,7 @@ agent host. Full instructions, the MCP configuration and usage examples are in
 
 ## Versions
 
-These skill versions go with `azure-sql-mcp` 3.0.0rc1: sql-optimizer 3.0.0,
+These skill versions go with `azure-sql-mcp` 3.0.0rc2: sql-optimizer 3.0.0,
 sql-health-triage 1.1.0, sql-plan-enforcer 1.1.0, sql-index-manager 2.1.0.
 
 ## Test

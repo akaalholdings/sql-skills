@@ -41,3 +41,7 @@ Bind `@CustomerId` as the column’s SQL type. Do not repair a mismatched applic
 When the application sends a parameter of the wrong type (for example `nvarchar` against a `varchar` column), the primary fix is the parameter type in the application, with the exact binding the developer must write. When a CHECK constraint or the column type limits the values the column can hold, use it: a value the column cannot contain cannot match, so say that the type change returns the same rows instead of listing the case as a risk.
 
 For prefix search, `Name LIKE @Prefix + N'%'` may be seekable under the active collation. A leading wildcard remains a contains search and must not be represented as a prefix range. Avoid `ISNULL(column, value)`, `COALESCE(column, value)`, CASE, scalar functions, or implicit type conversion around a search column unless no equivalent bare-column predicate exists.
+
+## Scalar function in the select list or predicate
+
+When `get_object_details` shows the body of a scalar function and the body is one deterministic expression over its arguments, write that expression in the query in place of the call, and aggregate before you apply it. State in the answer that the query now holds a copy of the rule, so a change to the function must be made in both places. When the body reads tables or is not visible, keep the call and reduce how often it runs: aggregate first, then call it once per group.
