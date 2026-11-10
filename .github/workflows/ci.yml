@@ -1,0 +1,59 @@
+name: SQL skills CI
+
+on:
+  push:
+    paths:
+      # The broad trigger includes documentation, skills, workflow, script, and
+      # retired-path changes, including deletions that no longer have a path.
+      - "**"
+  pull_request:
+    branches: [main]
+    paths:
+      - "**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  integrity:
+    name: Documentation and repository integrity
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+      - name: Run integrity script tests
+        run: python -m unittest discover -s scripts/tests -p 'test_*.py'
+      - name: Check Markdown links
+        run: python scripts/check_markdown_links.py
+      - name: Check retired paths and references
+        run: python scripts/check_retired_paths.py
+      - name: Scan repository content
+        run: python scripts/scan_content_secrets.py
+
+  skills:
+    name: Skills tests and clean-install parity
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+      - name: Install skill verification tools
+        run: python -m pip install --disable-pip-version-check pytest ruff
+      - name: Run skill tests
+        run: python -m pytest -q skills/sql_optimizer/tests skills/sql_plan_enforcer/tests skills/sql_health_triage/tests skills/sql_index_manager/tests skills/tests
+      - name: Compile skill runtime helpers
+        run: python -m compileall -q skills/sql_optimizer skills/sql_plan_enforcer skills/sql_health_triage skills/sql_index_manager skills/install_all.py skills/check_installed_parity.py scripts
+      - name: Run Ruff on skills and integrity scripts
+        run: python -m ruff check skills scripts
+      - name: Verify clean-install parity
+        shell: bash
+        run: |
+          set -euo pipefail
+          destination="$(mktemp -d)"
+          trap 'rm -rf "$destination"' EXIT
+          python skills/install_all.py --dest "$destination"
+          python skills/check_installed_parity.py --dest "$destination"

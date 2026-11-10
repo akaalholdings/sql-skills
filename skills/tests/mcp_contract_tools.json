@@ -1,0 +1,1149 @@
+{
+  "always_available": [
+    "check_runtime_status",
+    "export_incident_backlog",
+    "report_stuck"
+  ],
+  "parameters": {
+    "add_tuning_candidate": [
+      "artifact_ref",
+      "candidate_sql",
+      "database_name",
+      "idempotency_key",
+      "session_id",
+      "strategy"
+    ],
+    "analyze_application_patterns": [
+      "database_name",
+      "top",
+      "window_minutes"
+    ],
+    "analyze_db_health": [
+      "database_name",
+      "decision_id",
+      "health_type"
+    ],
+    "analyze_index_recommendations": [
+      "database_name"
+    ],
+    "analyze_query_indexes": [
+      "auto_bind_params",
+      "database_name",
+      "include_all_existing_indexes",
+      "parameter_types",
+      "parameter_values",
+      "queries"
+    ],
+    "analyze_query_plan": [
+      "database_name",
+      "include_digest",
+      "last_actual",
+      "node_id",
+      "plan_id",
+      "plan_xml",
+      "query_id",
+      "session_id",
+      "statement_index"
+    ],
+    "analyze_workload_indexes": [
+      "database_name",
+      "include_all_existing_indexes",
+      "top_n",
+      "window_minutes"
+    ],
+    "apply_plan_action": [
+      "action",
+      "database_name",
+      "dry_run",
+      "plan_id",
+      "query_id"
+    ],
+    "apply_prepared_plan_action": [
+      "authorization_reference",
+      "confirmation_token",
+      "database_name",
+      "intent_id"
+    ],
+    "apply_prepared_view_change": [
+      "change_id",
+      "database_name",
+      "idempotency_key",
+      "reviewed_intent"
+    ],
+    "assess_capacity": [
+      "database_name",
+      "window_days"
+    ],
+    "benchmark_index_candidate": [
+      "candidate_id",
+      "compare_order",
+      "data_compression",
+      "database_name",
+      "decision_id",
+      "detail",
+      "filter_definition",
+      "idempotency_key",
+      "include_columns",
+      "index_name_prefix",
+      "indexes",
+      "is_unique",
+      "key_columns",
+      "lease_minutes",
+      "online",
+      "parameter_cases",
+      "phase",
+      "replaces",
+      "schema_name",
+      "session_id",
+      "slow_baseline_cases",
+      "sql",
+      "table_name"
+    ],
+    "benchmark_query_rewrite": [
+      "analyze",
+      "auto_bind_params",
+      "baseline_sql",
+      "compare_order",
+      "database_name",
+      "detail",
+      "include_raw_xml",
+      "parameter_types",
+      "parameter_values",
+      "rewrite_sql",
+      "runs"
+    ],
+    "benchmark_tuning_candidate": [
+      "baseline_sql",
+      "candidate_id",
+      "candidate_sql",
+      "compare_order",
+      "cross_case",
+      "database_name",
+      "decision_id",
+      "detail",
+      "idempotency_key",
+      "parameter_cases",
+      "phase",
+      "prove_equivalence",
+      "runs",
+      "session_id",
+      "slow_baseline_cases"
+    ],
+    "capture_index_review_snapshot": [
+      "database_name",
+      "idempotency_key",
+      "include_snapshot"
+    ],
+    "capture_schema_snapshot": [
+      "database_name",
+      "schema_filter"
+    ],
+    "check_capabilities": [
+      "database_name"
+    ],
+    "check_equivalence_preflight": [
+      "database_name",
+      "sql"
+    ],
+    "check_runtime_status": [
+      "include_tool_names"
+    ],
+    "check_statistics_health": [
+      "database_name",
+      "mod_pct_threshold",
+      "stale_days"
+    ],
+    "clear_query_store_hints": [
+      "database_name",
+      "dry_run",
+      "query_id"
+    ],
+    "collect_performance_evidence": [
+      "case_id",
+      "database_name",
+      "decision_id",
+      "detail",
+      "execute_query",
+      "idempotency_key",
+      "parameter_case",
+      "query_store_query_id",
+      "sql",
+      "window_minutes"
+    ],
+    "compare_plan_summaries": [
+      "baseline_summary",
+      "candidate_summary",
+      "database_name"
+    ],
+    "compare_query_plans": [
+      "database_name",
+      "plan_id_a",
+      "plan_id_b",
+      "query_id"
+    ],
+    "compare_query_results": [
+      "baseline_sql",
+      "candidate_sql",
+      "compare_order",
+      "database_name",
+      "parameter_case",
+      "parameter_types",
+      "parameter_values"
+    ],
+    "compare_schemas": [
+      "schema_filter",
+      "source_database",
+      "target_database"
+    ],
+    "create_handoff": [
+      "acceptance_criteria",
+      "case_id",
+      "constraints",
+      "database_name",
+      "evidence_refs",
+      "gaps",
+      "idempotency_key",
+      "objective",
+      "session_id",
+      "source_skill",
+      "target_skill"
+    ],
+    "create_test_index": [
+      "database_name",
+      "dry_run",
+      "include_columns",
+      "index_name",
+      "key_columns",
+      "online",
+      "schema_name",
+      "table_name"
+    ],
+    "detect_parameter_sniffing": [
+      "database_name",
+      "top_n",
+      "variance_threshold",
+      "window_minutes"
+    ],
+    "detect_regressed_queries": [
+      "database_name",
+      "window_minutes"
+    ],
+    "diagnose_database": [
+      "database_name",
+      "sample_seconds",
+      "window_minutes"
+    ],
+    "drop_test_index": [
+      "database_name",
+      "dry_run",
+      "index_name",
+      "schema_name",
+      "table_name"
+    ],
+    "dry_run_plan_action": [
+      "action",
+      "database_name",
+      "plan_id",
+      "query_id"
+    ],
+    "execute_sql": [
+      "database_name",
+      "sql"
+    ],
+    "execute_tsql_unrestricted": [
+      "database_name",
+      "dry_run",
+      "sql"
+    ],
+    "explain_query": [
+      "analyze",
+      "auto_bind_params",
+      "database_name",
+      "hypothetical_indexes",
+      "include_operator_summary",
+      "include_raw_xml",
+      "parameter_case",
+      "parameter_types",
+      "parameter_values",
+      "sql"
+    ],
+    "export_incident_backlog": [
+      "include_details",
+      "max_items",
+      "min_priority",
+      "since_days"
+    ],
+    "finalize_tuning_session": [
+      "database_name",
+      "decision_id",
+      "idempotency_key",
+      "logical_preconditions",
+      "selected_candidate_id",
+      "selection_scope",
+      "session_id",
+      "stopping_reason"
+    ],
+    "force_query_plan": [
+      "database_name",
+      "dry_run",
+      "plan_id",
+      "query_id",
+      "unforce"
+    ],
+    "generate_migration_script": [
+      "schema_filter",
+      "source_database",
+      "target_database"
+    ],
+    "get_active_sessions": [
+      "database_name",
+      "include_plans",
+      "limit"
+    ],
+    "get_cached_routine_stats": [
+      "database_name",
+      "limit",
+      "routine_type",
+      "sort_by"
+    ],
+    "get_column_statistics": [
+      "columns",
+      "database_name",
+      "include_histogram",
+      "max_steps",
+      "schema_name",
+      "table_name",
+      "top_values"
+    ],
+    "get_columnstore_health": [
+      "database_name",
+      "schema_name",
+      "table_name",
+      "worst_n"
+    ],
+    "get_connection_diagnostics": [
+      "database_name",
+      "include_input_buffer",
+      "limit"
+    ],
+    "get_connection_pool_stats": [],
+    "get_currently_waiting_tasks": [
+      "database_name"
+    ],
+    "get_database_baseline": [
+      "as_of_utc",
+      "database_name",
+      "query_ids",
+      "scope",
+      "top",
+      "window_minutes"
+    ],
+    "get_database_configuration": [
+      "database_name"
+    ],
+    "get_deadlock_history": [
+      "as_of_utc",
+      "database_name",
+      "include_graph_xml",
+      "max_events",
+      "source",
+      "window_minutes"
+    ],
+    "get_dependencies": [
+      "database_name",
+      "object_name",
+      "schema_name"
+    ],
+    "get_diagnostic_history": [
+      "as_of_utc",
+      "category",
+      "database_name",
+      "max_events",
+      "window_minutes"
+    ],
+    "get_elastic_pool_pressure": [
+      "database_name",
+      "window_minutes"
+    ],
+    "get_failed_executions": [
+      "as_of_utc",
+      "baseline_minutes",
+      "database_name",
+      "recent_minutes",
+      "replica_role",
+      "top"
+    ],
+    "get_forced_plans": [
+      "database_name",
+      "window_minutes"
+    ],
+    "get_handoff": [
+      "database_name",
+      "handoff_id"
+    ],
+    "get_index_review": [
+      "database_name",
+      "include_full_review",
+      "review_id",
+      "subject_ids",
+      "subject_limit",
+      "subject_offset"
+    ],
+    "get_io_stats": [
+      "database_name"
+    ],
+    "get_lock_details": [
+      "database_name",
+      "limit"
+    ],
+    "get_memory_grants": [
+      "database_name"
+    ],
+    "get_memory_pressure": [
+      "database_name",
+      "top_clerks"
+    ],
+    "get_object_details": [
+      "database_name",
+      "object_name",
+      "object_type",
+      "schema_name"
+    ],
+    "get_object_index_diagnostics": [
+      "database_name",
+      "include_buffer_usage",
+      "limit",
+      "schema_name",
+      "table_name"
+    ],
+    "get_open_transactions": [
+      "database_name",
+      "limit"
+    ],
+    "get_performance_case": [
+      "case_id",
+      "database_name"
+    ],
+    "get_plan_cache_analysis": [
+      "database_name"
+    ],
+    "get_query_compilation_stats": [
+      "database_name",
+      "top_n"
+    ],
+    "get_query_parameter_buckets": [
+      "database_name",
+      "query_id"
+    ],
+    "get_query_store_regressions": [
+      "as_of_utc",
+      "baseline_minutes",
+      "database_name",
+      "metric",
+      "min_executions",
+      "min_regression_pct",
+      "recent_minutes",
+      "replica_role",
+      "top"
+    ],
+    "get_query_store_trend": [
+      "as_of_utc",
+      "bucket_minutes",
+      "database_name",
+      "query_id",
+      "replica_role",
+      "window_minutes"
+    ],
+    "get_query_wait_stats": [
+      "database_name",
+      "top_n",
+      "window_minutes"
+    ],
+    "get_resource_limits": [
+      "database_name"
+    ],
+    "get_resource_stats_history": [
+      "database_name",
+      "source",
+      "window_minutes"
+    ],
+    "get_storage_diagnostics": [
+      "database_name"
+    ],
+    "get_table_stats": [
+      "database_name",
+      "schema_name"
+    ],
+    "get_tempdb_space_breakdown": [
+      "database_name"
+    ],
+    "get_tempdb_usage": [
+      "database_name",
+      "limit"
+    ],
+    "get_tool_guide": [
+      "name"
+    ],
+    "get_top_cached_queries": [
+      "database_name",
+      "limit",
+      "sort_by"
+    ],
+    "get_top_queries": [
+      "as_of_utc",
+      "database_name",
+      "group_by",
+      "limit",
+      "replica_role",
+      "sort_by",
+      "window_minutes"
+    ],
+    "get_tuning_session": [
+      "database_name",
+      "session_id",
+      "view"
+    ],
+    "get_version_store_stats": [
+      "database_name"
+    ],
+    "get_wait_stats": [
+      "database_name",
+      "sample_seconds",
+      "top_n"
+    ],
+    "kill_session": [
+      "database_name",
+      "dry_run",
+      "session_id"
+    ],
+    "list_databases": [],
+    "list_learning_candidates": [
+      "database_name",
+      "learning_key",
+      "skill"
+    ],
+    "list_objects": [
+      "database_name",
+      "object_type",
+      "schema_name"
+    ],
+    "list_schemas": [
+      "database_name"
+    ],
+    "optimize_indexes": [
+      "alpha",
+      "beta",
+      "budget_mb",
+      "database_name",
+      "include_all_existing_indexes",
+      "min_improvement_pct",
+      "top_n",
+      "window_minutes"
+    ],
+    "plan_enforcer_tick": [
+      "database_name",
+      "dry_run",
+      "max_actions",
+      "window_minutes"
+    ],
+    "plan_health_review": [
+      "database_name",
+      "top_n",
+      "window_minutes"
+    ],
+    "prepare_plan_action": [
+      "candidate_id",
+      "database_name",
+      "evidence",
+      "idempotency_key",
+      "operation",
+      "plan_id",
+      "query_hints",
+      "query_id",
+      "reason",
+      "reviewed_by",
+      "session_id"
+    ],
+    "prepare_view_change": [
+      "database_name",
+      "definition",
+      "idempotency_key",
+      "indexed_view",
+      "operation",
+      "schema_bound",
+      "schema_name",
+      "view_name"
+    ],
+    "propose_lesson": [
+      "action",
+      "applicable_skills",
+      "counterexamples",
+      "database_name",
+      "freshness_days",
+      "idempotency_key",
+      "learning_key",
+      "next_observation",
+      "preconditions",
+      "required_evidence",
+      "review_ids",
+      "supersedes_lesson_id",
+      "tags",
+      "trigger"
+    ],
+    "rebuild_index": [
+      "database_name",
+      "dry_run",
+      "index_name",
+      "online",
+      "operation",
+      "schema_name",
+      "table_name"
+    ],
+    "recall_lessons": [
+      "database_name",
+      "query_fingerprint",
+      "runtime_compatibility_fingerprint",
+      "sanitized_config_fingerprint",
+      "skill",
+      "skill_version",
+      "tags",
+      "tool_schema_fingerprint"
+    ],
+    "record_decision": [
+      "applied_lesson_ids",
+      "based_on_review_ids",
+      "candidate_id",
+      "case_id",
+      "confidence",
+      "consumed_evidence_refs",
+      "database_name",
+      "evaluator_fingerprint",
+      "expected_result",
+      "idempotency_key",
+      "learning_key",
+      "query_fingerprint",
+      "runtime_compatibility_fingerprint",
+      "runtime_fingerprint",
+      "sanitized_config_fingerprint",
+      "session_id",
+      "skill",
+      "skill_version",
+      "subject_fingerprint",
+      "subject_kind",
+      "tactic",
+      "tags",
+      "tool_schema_fingerprint",
+      "uncertainty"
+    ],
+    "report_stuck": [
+      "attempts",
+      "blocker_kind",
+      "ctx",
+      "last_tool",
+      "related_ids",
+      "skill",
+      "skill_version",
+      "summary"
+    ],
+    "resolve_handoff": [
+      "action",
+      "database_name",
+      "decision_id",
+      "expected_version",
+      "handoff_id",
+      "owner",
+      "resolution",
+      "resolution_evidence_refs"
+    ],
+    "review_decision": [
+      "alignment",
+      "causal_strength",
+      "cleanup_signal",
+      "correction",
+      "counterexamples",
+      "database_name",
+      "decision_id",
+      "equivalence_signal",
+      "explicit_correction",
+      "idempotency_key",
+      "material_regression_signal",
+      "next_observation",
+      "observed_result",
+      "prediction_error",
+      "safety_signal",
+      "terminal_evidence_refs",
+      "unknown_outcome",
+      "unresolved_gaps"
+    ],
+    "review_index_portfolio": [
+      "as_of_run_id",
+      "database_name",
+      "include_full_review",
+      "prior_review_id"
+    ],
+    "review_plan_enforcement": [
+      "database_name",
+      "top_n",
+      "window_minutes"
+    ],
+    "review_workload_indexes": [
+      "as_of_utc",
+      "database_name",
+      "include_change_plan",
+      "include_existing_index_review",
+      "lookback_days",
+      "max_recommendations_per_table",
+      "min_table_rows",
+      "objective",
+      "plans_per_query",
+      "query_ids",
+      "schema_name",
+      "soak_days",
+      "table_names",
+      "top_queries"
+    ],
+    "rollback_plan_action": [
+      "authorization_reference",
+      "confirmation_token",
+      "database_name",
+      "decision_id",
+      "intent_id",
+      "reason"
+    ],
+    "rollback_view_change": [
+      "change_id",
+      "database_name"
+    ],
+    "search_objects": [
+      "database_name",
+      "object_type",
+      "pattern"
+    ],
+    "set_query_store_hints": [
+      "database_name",
+      "dry_run",
+      "query_hints",
+      "query_id"
+    ],
+    "start_performance_case": [
+      "database_name",
+      "idempotency_key",
+      "objective",
+      "parameter_cases",
+      "query_store_query_id",
+      "sql"
+    ],
+    "start_tuning_session": [
+      "case_id",
+      "database_name",
+      "execution_limit",
+      "idempotency_key",
+      "max_candidates",
+      "time_limit_minutes"
+    ],
+    "tune_query": [
+      "analyze",
+      "auto_bind_params",
+      "database_name",
+      "detail",
+      "include_raw_xml",
+      "parameter_types",
+      "parameter_values",
+      "sql",
+      "window_minutes"
+    ],
+    "update_statistics": [
+      "database_name",
+      "dry_run",
+      "sample_percent",
+      "schema_name",
+      "stat_name",
+      "table_name"
+    ],
+    "verify_plan_action": [
+      "authorization_reference",
+      "candidate_evidence",
+      "database_name",
+      "decision_id",
+      "intent_id"
+    ],
+    "verify_view_change": [
+      "change_id",
+      "database_name"
+    ]
+  },
+  "profiles": {
+    "triage": [
+      "analyze_application_patterns",
+      "analyze_db_health",
+      "analyze_query_plan",
+      "assess_capacity",
+      "check_capabilities",
+      "check_equivalence_preflight",
+      "check_runtime_status",
+      "check_statistics_health",
+      "collect_performance_evidence",
+      "create_handoff",
+      "detect_parameter_sniffing",
+      "detect_regressed_queries",
+      "diagnose_database",
+      "explain_query",
+      "get_active_sessions",
+      "get_cached_routine_stats",
+      "get_column_statistics",
+      "get_columnstore_health",
+      "get_connection_diagnostics",
+      "get_currently_waiting_tasks",
+      "get_database_baseline",
+      "get_database_configuration",
+      "get_deadlock_history",
+      "get_diagnostic_history",
+      "get_elastic_pool_pressure",
+      "get_failed_executions",
+      "get_forced_plans",
+      "get_handoff",
+      "get_io_stats",
+      "get_lock_details",
+      "get_memory_grants",
+      "get_memory_pressure",
+      "get_object_index_diagnostics",
+      "get_open_transactions",
+      "get_performance_case",
+      "get_plan_cache_analysis",
+      "get_query_compilation_stats",
+      "get_query_parameter_buckets",
+      "get_query_store_regressions",
+      "get_query_store_trend",
+      "get_query_wait_stats",
+      "get_resource_limits",
+      "get_resource_stats_history",
+      "get_storage_diagnostics",
+      "get_tempdb_space_breakdown",
+      "get_tempdb_usage",
+      "get_tool_guide",
+      "get_top_cached_queries",
+      "get_top_queries",
+      "get_version_store_stats",
+      "get_wait_stats",
+      "list_databases",
+      "list_learning_candidates",
+      "propose_lesson",
+      "recall_lessons",
+      "record_decision",
+      "resolve_handoff",
+      "review_decision",
+      "review_workload_indexes",
+      "start_performance_case"
+    ],
+    "optimizer": [
+      "add_tuning_candidate",
+      "analyze_index_recommendations",
+      "analyze_query_indexes",
+      "analyze_query_plan",
+      "benchmark_tuning_candidate",
+      "check_capabilities",
+      "check_equivalence_preflight",
+      "check_runtime_status",
+      "collect_performance_evidence",
+      "compare_plan_summaries",
+      "compare_query_results",
+      "create_handoff",
+      "detect_parameter_sniffing",
+      "detect_regressed_queries",
+      "diagnose_database",
+      "explain_query",
+      "finalize_tuning_session",
+      "get_active_sessions",
+      "get_cached_routine_stats",
+      "get_column_statistics",
+      "get_dependencies",
+      "get_forced_plans",
+      "get_handoff",
+      "get_io_stats",
+      "get_object_details",
+      "get_object_index_diagnostics",
+      "get_performance_case",
+      "get_query_parameter_buckets",
+      "get_query_store_regressions",
+      "get_query_store_trend",
+      "get_table_stats",
+      "get_tool_guide",
+      "get_top_cached_queries",
+      "get_top_queries",
+      "get_tuning_session",
+      "list_databases",
+      "list_learning_candidates",
+      "list_schemas",
+      "prepare_view_change",
+      "propose_lesson",
+      "recall_lessons",
+      "record_decision",
+      "resolve_handoff",
+      "review_decision",
+      "review_workload_indexes",
+      "search_objects",
+      "start_performance_case",
+      "start_tuning_session"
+    ],
+    "sandbox": [
+      "add_tuning_candidate",
+      "analyze_index_recommendations",
+      "analyze_query_indexes",
+      "analyze_query_plan",
+      "apply_prepared_view_change",
+      "benchmark_index_candidate",
+      "benchmark_tuning_candidate",
+      "check_capabilities",
+      "check_equivalence_preflight",
+      "check_runtime_status",
+      "collect_performance_evidence",
+      "compare_plan_summaries",
+      "compare_query_results",
+      "create_handoff",
+      "detect_parameter_sniffing",
+      "detect_regressed_queries",
+      "execute_sql",
+      "explain_query",
+      "finalize_tuning_session",
+      "get_active_sessions",
+      "get_cached_routine_stats",
+      "get_column_statistics",
+      "get_dependencies",
+      "get_forced_plans",
+      "get_handoff",
+      "get_io_stats",
+      "get_object_details",
+      "get_object_index_diagnostics",
+      "get_performance_case",
+      "get_query_parameter_buckets",
+      "get_query_store_regressions",
+      "get_query_store_trend",
+      "get_table_stats",
+      "get_tool_guide",
+      "get_top_cached_queries",
+      "get_top_queries",
+      "get_tuning_session",
+      "list_databases",
+      "list_learning_candidates",
+      "list_schemas",
+      "prepare_view_change",
+      "propose_lesson",
+      "recall_lessons",
+      "record_decision",
+      "resolve_handoff",
+      "review_decision",
+      "review_workload_indexes",
+      "rollback_view_change",
+      "search_objects",
+      "start_performance_case",
+      "start_tuning_session",
+      "verify_view_change"
+    ],
+    "enforcer-review": [
+      "analyze_query_plan",
+      "check_capabilities",
+      "check_runtime_status",
+      "collect_performance_evidence",
+      "compare_query_plans",
+      "create_handoff",
+      "detect_parameter_sniffing",
+      "detect_regressed_queries",
+      "dry_run_plan_action",
+      "get_active_sessions",
+      "get_cached_routine_stats",
+      "get_forced_plans",
+      "get_handoff",
+      "get_io_stats",
+      "get_object_index_diagnostics",
+      "get_performance_case",
+      "get_query_parameter_buckets",
+      "get_query_store_regressions",
+      "get_query_store_trend",
+      "get_tool_guide",
+      "get_top_cached_queries",
+      "get_top_queries",
+      "list_databases",
+      "list_learning_candidates",
+      "plan_enforcer_tick",
+      "plan_health_review",
+      "prepare_plan_action",
+      "propose_lesson",
+      "recall_lessons",
+      "record_decision",
+      "resolve_handoff",
+      "review_decision",
+      "review_plan_enforcement",
+      "start_performance_case"
+    ],
+    "enforcer-apply": [
+      "analyze_query_plan",
+      "apply_prepared_plan_action",
+      "check_capabilities",
+      "check_runtime_status",
+      "collect_performance_evidence",
+      "compare_query_plans",
+      "create_handoff",
+      "detect_parameter_sniffing",
+      "detect_regressed_queries",
+      "dry_run_plan_action",
+      "get_active_sessions",
+      "get_cached_routine_stats",
+      "get_forced_plans",
+      "get_handoff",
+      "get_io_stats",
+      "get_object_index_diagnostics",
+      "get_performance_case",
+      "get_query_parameter_buckets",
+      "get_query_store_regressions",
+      "get_query_store_trend",
+      "get_tool_guide",
+      "get_top_cached_queries",
+      "get_top_queries",
+      "list_databases",
+      "list_learning_candidates",
+      "plan_enforcer_tick",
+      "plan_health_review",
+      "prepare_plan_action",
+      "propose_lesson",
+      "recall_lessons",
+      "record_decision",
+      "resolve_handoff",
+      "review_decision",
+      "review_plan_enforcement",
+      "rollback_plan_action",
+      "start_performance_case",
+      "verify_plan_action"
+    ],
+    "index-review": [
+      "capture_index_review_snapshot",
+      "check_capabilities",
+      "check_runtime_status",
+      "check_statistics_health",
+      "get_columnstore_health",
+      "get_index_review",
+      "get_query_store_trend",
+      "get_tool_guide",
+      "get_top_queries",
+      "list_databases",
+      "recall_lessons",
+      "review_index_portfolio",
+      "review_workload_indexes"
+    ]
+  },
+  "source": "azure-sql-mcp branch feat/optimizer-3-0 at f11b58f: src/azure_sql_mcp/config.py (TOOL_GROUPS, PROFILE_TOOL_ALLOWLISTS) and server.py (tool parameters); pyproject still says 2.6.3",
+  "tools": [
+    "add_tuning_candidate",
+    "analyze_application_patterns",
+    "analyze_db_health",
+    "analyze_index_recommendations",
+    "analyze_query_indexes",
+    "analyze_query_plan",
+    "analyze_workload_indexes",
+    "apply_plan_action",
+    "apply_prepared_plan_action",
+    "apply_prepared_view_change",
+    "assess_capacity",
+    "benchmark_index_candidate",
+    "benchmark_query_rewrite",
+    "benchmark_tuning_candidate",
+    "capture_index_review_snapshot",
+    "capture_schema_snapshot",
+    "check_capabilities",
+    "check_equivalence_preflight",
+    "check_runtime_status",
+    "check_statistics_health",
+    "clear_query_store_hints",
+    "collect_performance_evidence",
+    "compare_plan_summaries",
+    "compare_query_plans",
+    "compare_query_results",
+    "compare_schemas",
+    "create_handoff",
+    "create_test_index",
+    "detect_parameter_sniffing",
+    "detect_regressed_queries",
+    "diagnose_database",
+    "drop_test_index",
+    "dry_run_plan_action",
+    "execute_sql",
+    "execute_tsql_unrestricted",
+    "explain_query",
+    "export_incident_backlog",
+    "finalize_tuning_session",
+    "force_query_plan",
+    "generate_migration_script",
+    "get_active_sessions",
+    "get_cached_routine_stats",
+    "get_column_statistics",
+    "get_columnstore_health",
+    "get_connection_diagnostics",
+    "get_connection_pool_stats",
+    "get_currently_waiting_tasks",
+    "get_database_baseline",
+    "get_database_configuration",
+    "get_deadlock_history",
+    "get_dependencies",
+    "get_diagnostic_history",
+    "get_elastic_pool_pressure",
+    "get_failed_executions",
+    "get_forced_plans",
+    "get_handoff",
+    "get_index_review",
+    "get_io_stats",
+    "get_lock_details",
+    "get_memory_grants",
+    "get_memory_pressure",
+    "get_object_details",
+    "get_object_index_diagnostics",
+    "get_open_transactions",
+    "get_performance_case",
+    "get_plan_cache_analysis",
+    "get_query_compilation_stats",
+    "get_query_parameter_buckets",
+    "get_query_store_regressions",
+    "get_query_store_trend",
+    "get_query_wait_stats",
+    "get_resource_limits",
+    "get_resource_stats_history",
+    "get_storage_diagnostics",
+    "get_table_stats",
+    "get_tempdb_space_breakdown",
+    "get_tempdb_usage",
+    "get_tool_guide",
+    "get_top_cached_queries",
+    "get_top_queries",
+    "get_tuning_session",
+    "get_version_store_stats",
+    "get_wait_stats",
+    "kill_session",
+    "list_databases",
+    "list_learning_candidates",
+    "list_objects",
+    "list_schemas",
+    "optimize_indexes",
+    "plan_enforcer_tick",
+    "plan_health_review",
+    "prepare_plan_action",
+    "prepare_view_change",
+    "propose_lesson",
+    "rebuild_index",
+    "recall_lessons",
+    "record_decision",
+    "report_stuck",
+    "resolve_handoff",
+    "review_decision",
+    "review_index_portfolio",
+    "review_plan_enforcement",
+    "review_workload_indexes",
+    "rollback_plan_action",
+    "rollback_view_change",
+    "search_objects",
+    "set_query_store_hints",
+    "start_performance_case",
+    "start_tuning_session",
+    "tune_query",
+    "update_statistics",
+    "verify_plan_action",
+    "verify_view_change"
+  ]
+}
