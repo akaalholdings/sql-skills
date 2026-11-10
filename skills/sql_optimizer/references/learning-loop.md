@@ -2,8 +2,9 @@
 
 Detail for `SKILL.md`. Its hard rules apply here; nothing in this file relaxes them.
 
-This loop is optional: run it only when the user asks for it. The learning tools take
-four fingerprints from `check_runtime_status` as arguments: the process
+This loop is optional and outside the tuning path: run it only when the user asks for
+it. When its tools are missing or fail, continue the tuning work unchanged. The learning
+tools take four fingerprints from `check_runtime_status` as arguments: the process
 `runtime_fingerprint` and the stable `runtime_compatibility_fingerprint`,
 `tool_schema_fingerprint`, and `sanitized_config_fingerprint`. No tuning tool needs them.
 

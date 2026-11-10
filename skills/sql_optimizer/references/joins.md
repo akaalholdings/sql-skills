@@ -62,6 +62,30 @@ ORDER BY t.TicketId;
 
 `UNION` removes the row that matches both branches, so no row is returned twice; `UNION ALL` is right only when the branches cannot overlap. Each branch needs an index that leads on its column. The total-order proof follows this shape when the ORDER BY ends on the primary key.
 
+### Filter on a dimension attribute: resolve the key first
+
+A filter on a name in a small dimension or lookup table, joined to a large fact or bridge table, hides the fact filter behind the join. Resolve the key, then filter the large table on its own column:
+
+```sql
+DECLARE @TypeKey int =
+(
+    SELECT t.TypeKey
+    FROM dw.DimType AS t
+    WHERE t.TypeName = @TypeName
+);
+
+SELECT f.MonthKey, COUNT_BIG(*) AS EventCount
+FROM dw.FactEvent AS f
+WHERE f.TypeKey = @TypeKey
+GROUP BY f.MonthKey
+OPTION (OPTIMIZE FOR (@TypeKey = 2));
+```
+
+- **Same results when:** a unique constraint or unique index on the attribute gives at most one key (a second row raises an error, never wrong rows); the join was an inner join on the dimension's unique key; the statement reads no other dimension column. Zero keys: the variable is NULL, no row matches, and the result is the same empty result. Register a case with no match.
+- **Skew.** The variable is not sniffed: the plan uses the average density. When key values differ greatly in row count, add `OPTIMIZE FOR` the heaviest key value, as above, or a branch per size class. One plan then serves every value: measure every case on it, the lightest too. Say that the hint names a data value.
+- **Many keys per attribute value:** keep the join, to a derived set of the keys; no temporary table.
+- **Tools.** The proof tools take a `DECLARE` with a scalar subquery, then one SELECT, as one candidate. They refuse `SELECT @v = ...` and a subquery in front of IF / ELSE: measure such a batch under "Always finish" in `SKILL.md`, or offer it as not measured.
+
 ### Joins, EXISTS, and fan-out
 
 - **Trigger:** a join multiplies rows, a correlated subquery repeats work, or the query checks existence without selecting child columns.
@@ -70,43 +94,6 @@ ORDER BY t.TicketId;
 - **Counterexample/risk:** replacing JOIN with EXISTS removes fan-out; pre-aggregation can change NULL groups; a “redundant” join may enforce security or filter rows.
 - **MCP evidence:** object/dependency metadata, join estimates versus actuals, fan-out rows, key lookups, `compare_query_results` with duplicate-aware comparison, and plan deltas.
 
-If child rows are used only to test existence, a semi-join can avoid fan-out:
+If child rows are used only to test existence, `WHERE EXISTS (...)` avoids the fan-out. This is not equivalent when the original query returned one row per matching order. For `NOT EXISTS`, verify NULL semantics instead of mechanically replacing `NOT IN`. For outer joins, keep predicates on the nullable side in the correct `ON` or `WHERE` location; moving them can turn an outer join into an inner join.
 
-```sql
-SELECT
-    c.CustomerId,
-    c.DisplayName
-FROM dbo.Customers AS c
-WHERE EXISTS
-(
-    SELECT 1
-    FROM dbo.Orders AS o
-    WHERE o.CustomerId = c.CustomerId
-      AND o.Status = @Status
-);
-```
-
-This is not equivalent when the original query returned one row per matching order. For `NOT EXISTS`, verify NULL semantics instead of mechanically replacing `NOT IN`. For outer joins, keep predicates on the nullable side in the correct `ON` or `WHERE` location; moving them can turn an outer join into an inner join.
-
-Pre-aggregate the many-side only when the original result already had one row per parent:
-
-```sql
-WITH OrderTotals AS
-(
-    SELECT
-        o.CustomerId,
-        SUM(o.Amount) AS TotalAmount
-    FROM dbo.Orders AS o
-    WHERE o.OrderDate >= @FromDate
-      AND o.OrderDate < @ToDate
-    GROUP BY o.CustomerId
-)
-SELECT
-    c.CustomerId,
-    ot.TotalAmount
-FROM dbo.Customers AS c
-INNER JOIN OrderTotals AS ot
-    ON ot.CustomerId = c.CustomerId;
-```
-
-Check empty groups, duplicate parents, decimal accumulation type, and predicates from other child tables. A CTE is syntax, not guaranteed materialization. If an expensive intermediate result is referenced repeatedly, test a temporary table only in an approved disposable execution context and include its populate cost, indexes, recompilation effect, and cleanup in the measurement.
+Pre-aggregate the many-side (one `GROUP BY` on the join key in a derived table, joined to the parent) only when the original result already had one row per parent. Check empty groups, duplicate parents, decimal accumulation type, and predicates from other child tables. A CTE is syntax, not guaranteed materialization. If an expensive intermediate result is referenced repeatedly, test a temporary table only in an approved disposable execution context and include its populate cost, indexes, recompilation effect, and cleanup in the measurement.

@@ -23,6 +23,10 @@ Sections 1 to 8 of the output contract never contain a tool name, a skill name, 
 
 A design under a declared precondition is written as: the same results while the property holds; verified on current data, not enforced. Give the DDL that enforces it. Never write "proven" or "safe to deploy" for it.
 
+## A cost that was not measured
+
+The lead is the fastest measured design with matching results. When the brief names a cost only in words (a write-heavy table, a large index), that does not demote it. State the cost in the risk section with the index size, say that the write cost was not measured, and give the cheaper design as the alternative, with its measured numbers and the condition under which it wins. A tested match is written with its scope; "not statically proven" is a caveat, not a reason to lead with a slower design.
+
 ## When the engagement defines the report
 
 When the engagement defines the report's sections, write those sections. Keep identifiers and tool notes out of the client report: put them in the last message, or in the notes file the engagement names.

@@ -44,4 +44,11 @@ For prefix search, `Name LIKE @Prefix + N'%'` may be seekable under the active c
 
 ## Scalar function in the select list or predicate
 
-When `get_object_details` shows the body of a scalar function and the body is one deterministic expression over its arguments, write that expression in the query in place of the call, and aggregate before you apply it. State in the answer that the query now holds a copy of the rule, so a change to the function must be made in both places. When the body reads tables or is not visible, keep the call and reduce how often it runs: aggregate first, then call it once per group.
+A scalar function called per row runs once for every row, and its time appears in no plan operator. When `get_object_details` shows the body and the body is deterministic over its arguments, the inlined form is the first design to test, before "call it once per group":
+
+- One expression: write it in the query in place of the call. Band rules written as IF / RETURN steps: one `CASE` with the tests in the same order, the same result for NULL, and a `CAST` to the function's return type.
+- Aggregate before you apply it: count or sum per distinct argument value first, then apply the expression once per value.
+- State in the answer that the query now holds a copy of the rule, so a change to the function must be made in both places.
+- Measure every case. A set-based form can read more pages than the per-row call when a case touches few rows: that case is a regression, and the original statement stays for it in a branch.
+
+When the body reads tables or is not visible, keep the call and reduce how often it runs: aggregate first, then call it once per group.

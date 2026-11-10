@@ -159,15 +159,18 @@ def test_expert_checks_are_in_the_core_and_the_references_name_the_tool_route() 
     # compression rebuild never changed a result (four tasks, same depth), and
     # a UNION ALL form was sent to the proof seven times. The core keeps the
     # decision; the reference that owns the tool keeps the call.
+    # Suite v3 without indexed views: the compression check left the core to
+    # make room (the indexes and sandbox references keep it, the output
+    # contract keeps size and depth), and the hint check now admits a hint
+    # that the ladder or the finishing pass names, measured on every case.
     checks = _flat(_section(CORE, "## Checks an expert forgets"))
     items = re.findall(r"- \*\*([^*]+?)\.?\*\*", _section(CORE, "## Checks an expert forgets"))
     assert len(items) == 4
     for phrase in (
         "One regressed parameter case rejects a candidate",
         "also test one case on the plan compiled for another",
-        "A new index: PAGE compression, one build",
-        "Report its depth and size",
         "A hint is an alternative, never the lead",
+        "unless the ladder or the finishing pass names it and every case ran on it",
         "only with the measured numbers of the parameter pair it makes worse",
         "A tested match is enough to recommend",
         "State its scope (tested on the listed cases, not proven for all inputs) and each caveat",
@@ -306,17 +309,26 @@ def test_runtime_gate_is_one_call_sequence_without_ceremony() -> None:
 
 
 def test_learning_loop_is_optional_and_outside_the_tuning_path() -> None:
-    gate = _flat(_section(CORE, "## Runtime contract gate"))
+    # The paragraph in the runtime gate became the routing row, to make room
+    # in the core; the reference states the rest.
+    routing = {row[0]: row[1] for row in _rows(_section(CORE, "## Reference routing"))}
+    condition = routing["[learning-loop](references/learning-loop.md)"]
     for phrase in (
-        "Learning and handoff tools are optional and advisory, outside the tuning path",
-        "use them only when the user asks",
-        "read the learning-loop reference before the first call",
-        "When they are missing or fail, continue unchanged",
+        "only when the user asks for learning or handoff tools",
+        "before the first call",
+        "advisory",
+        "if one fails, continue unchanged",
     ):
-        assert phrase in gate
+        assert phrase in condition, phrase
     workflow = _reference("measured-workflow.md")
     assert "record_decision" not in workflow
-    assert "This loop is optional" in _reference("learning-loop.md")
+    learning = _reference("learning-loop.md")
+    for phrase in (
+        "This loop is optional and outside the tuning path",
+        "run it only when the user asks for it",
+        "When its tools are missing or fail, continue the tuning work unchanged",
+    ):
+        assert phrase in learning, phrase
 
 
 def test_references_read_the_small_result_first_and_the_core_points_to_the_tool_guide() -> None:
@@ -493,12 +505,16 @@ def test_design_ladder_starts_at_the_highest_leverage_design() -> None:
 
     view = lead("repeated aggregate over large tables, few output groups")
     assert "Indexed view read `WITH (NOEXPAND)`" in view[1]
+    # The three costs moved to the sandbox reference, which the row names, to
+    # make room in the core.
+    assert "State its costs (sandbox reference)" in view[1]
+    sandbox = _reference("sandbox-index-and-view.md")
     for cost in (
-        "every base-table write maintains it",
-        "TRUNCATE, ALTER COLUMN, and partition SWITCH on base tables fail",
-        "SET options for writers",
+        "Every insert, update, and delete on a base table also maintains the view",
+        "`TRUNCATE TABLE`, `ALTER COLUMN`, and partition `SWITCH` on its base tables fail",
+        "need the SET options that indexed views require",
     ):
-        assert cost in view[1], cost
+        assert cost in sandbox, cost
     for phrase in (
         "write-heavy tables",
         "a volatile definition",
@@ -512,12 +528,14 @@ def test_design_ladder_starts_at_the_highest_leverage_design() -> None:
     assert "B-tree" in scan[2]
     lookup = lead("selective lookup on a fact table that has a columnstore index")
     assert "Nonclustered B-tree index; built offline when the columnstore index is clustered" in lookup[1]
-    partitioned = lead("on a partitioned table, order column not the partition column")
-    assert "Non-aligned index: one ordered B-tree across partitions" in partitioned[1]
-    assert "Warn: it blocks partition SWITCH" in partitioned[1]
-    assert "aligned index" in partitioned[2]
     top = rows["`top` with `order by`"]
     assert "Covering index: equality columns, then the ORDER BY columns in order and direction" in top[1]
+    # The partitioned case is part of the TOP row now: one row less in the core.
+    assert (
+        "Partitioned table, order column not the partition column: a non-aligned index, "
+        "one ordered B-tree; warn that it blocks partition SWITCH"
+    ) in top[1]
+    assert "a load by partition switch: aligned index" in top[2]
     conversion = lead("implicit conversion from the parameter type")
     assert "fix the parameter type in the application" in conversion[1]
     assert "guard values that convert differently" in conversion[1]
@@ -1109,7 +1127,9 @@ def test_budget_reference_keeps_policy_caps_and_current_defaults() -> None:
         "20 minutes",
         "A limit you state above the policy is refused",
         "`decision.executions` reports what ran",
-        "fastest proven-equivalent candidate",
+        # A tested match may lead (decision 5), so "fastest" no longer means proven only.
+        "the fastest candidate whose results matched on every tested parameter case",
+        "proven equivalent, or a tested match with its scope stated",
         "do not retry blindly",
     ):
         assert phrase in budget, phrase
@@ -1375,3 +1395,120 @@ def test_a_tested_match_is_recommended_with_its_scope_and_never_called_proven() 
     assert table["`not_compared`"] == "the results could not be compared; say why"
     # The standard itself does not move: a test is not a proof.
     assert "never proven equivalent" in _flat(_section(CORE, "## Equivalence standard"))
+
+
+def test_designs_that_beat_the_product_without_indexed_views_are_taught() -> None:
+    # Suite v3 with indexed views forbidden for both sides: the bare model won
+    # 12 of 38 tasks with designs the skill did not teach or discouraged.
+    rows = {row[0].casefold(): row for row in _rows(_section(CORE, "## Design ladder"))}
+    key_first = next(
+        row for trigger, row in rows.items()
+        if "attribute of a small dimension or lookup table joined to a large fact or bridge table" in trigger
+    )
+    for phrase in (
+        "Resolve the key into a variable first, then filter the large table on it",
+        "`OPTIMIZE FOR` the heaviest, or a branch per size class",
+        "measure every case on the shared plan",
+    ):
+        assert phrase in key_first[1], phrase
+    assert "the attribute maps to many keys" in key_first[2]
+    assert "joins.md" in key_first[3]
+    joins = _reference("joins.md")
+    for phrase in (
+        "DECLARE @TypeKey int =",
+        "OPTION (OPTIMIZE FOR (@TypeKey = 2))",
+        "a unique constraint or unique index on the attribute gives at most one key",
+        "a second row raises an error, never wrong rows",
+        "Zero keys: the variable is NULL, no row matches, and the result is the same empty result",
+        "Register a case with no match",
+        "The variable is not sniffed",
+        "measure every case on it, the lightest too",
+        "keep the join, to a derived set of the keys; no temporary table",
+        "They refuse `SELECT @v = ...` and a subquery in front of IF / ELSE",
+    ):
+        assert phrase in joins, phrase
+    # Two scanned tables: a columnstore index on each, as one index set.
+    scan = next(row for trigger, row in rows.items() if "or of two large joined tables" in trigger)
+    assert "Nonclustered columnstore index on each scanned table, in one index set" in scan[1]
+    indexes = _reference("indexes.md")
+    for phrase in (
+        "Test a nonclustered columnstore index on each scanned table, each with `order_columns` on its range column, as one index set in one call",
+        "One B-tree on the smaller side leaves the larger scan in row mode",
+        "A cost stated only in words (write-heavy, a large index) does not demote a measured faster index",
+        "say that the write cost was not measured",
+    ):
+        assert phrase in indexes, phrase
+    predicates = _reference("predicates.md")
+    for phrase in (
+        "the inlined form is the first design to test",
+        "one `CASE` with the tests in the same order",
+        "count or sum per distinct argument value first",
+        "the query now holds a copy of the rule",
+        "that case is a regression, and the original statement stays for it in a branch",
+    ):
+        assert phrase in predicates, phrase
+
+
+def test_fastest_measured_design_leads_and_a_regressed_case_is_final() -> None:
+    # The product measured a columnstore index at 147 ms and led with a B-tree
+    # at 987 ms because the brief said "write-heavy"; it led with a 171 ms
+    # form over a tested 29 ms form; and it delivered a design with one case
+    # worse on logical reads.
+    decisions = _flat(_section(CORE, "## Decisions, in order"))
+    for phrase in (
+        "When measured, lead with the fastest design whose results matched on every case",
+        "Only a measured regression, a mismatch, or a forbidden design demotes it",
+        "a cost given only in words (write-heavy, a large index) does not",
+        "state it and give the cheaper design second, with its numbers",
+    ):
+        assert phrase in decisions, phrase
+    checks = _flat(_section(CORE, "## Checks an expert forgets"))
+    for phrase in (
+        "**A regressed case is final.**",
+        "A case worse than the original on CPU or logical reads, beyond noise",
+        "never deliver that design as it is, never argue the regression away",
+        "Keep the original statement for that parameter class in a branch, or pick another design",
+        "Never discard a faster measured design for it, or lead with a slower one",
+    ):
+        assert phrase in checks, phrase
+    report = _flat(_section(REFERENCES["client-report.md"], "## A cost that was not measured"))
+    for phrase in (
+        "State the cost in the risk section with the index size, say that the write cost was not measured",
+        "give the cheaper design as the alternative, with its measured numbers",
+        '"not statically proven" is a caveat, not a reason to lead with a slower design',
+    ):
+        assert phrase in report, phrase
+    parameters = _reference("cardinality-parameters.md")
+    for phrase in (
+        "`decision.by_metric` gives the verdict of every case on CPU, elapsed time, and logical reads",
+        "rejects the design as it is, also when the other cases are far faster",
+        "reports such a case as `unchanged_by_design`",
+        "Never explain a regression away",
+    ):
+        assert phrase in parameters, phrase
+    # The standard does not move: a tested match is still not called proven.
+    assert "tested on the listed cases, not proven for all inputs" in checks
+
+
+def test_finishing_pass_is_measured_and_shown_in_full() -> None:
+    # Serial plans, bounds in variables and a probe branch decided four tasks.
+    budget = _flat(_section(CORE, "## Time budget"))
+    assert "The finishing pass is first" in budget
+    routing = {row[0]: row[1] for row in _rows(_section(CORE, "## Reference routing"))}
+    assert "the finishing pass on a measured design" in routing[
+        "[cardinality-parameters](references/cardinality-parameters.md)"
+    ]
+    finishing = _flat(_section(REFERENCES["cardinality-parameters.md"], "## Plan-level finishing"))
+    for phrase in (
+        "test each of these once, as a variant of the finalist",
+        "Each is measured on every case, never assumed, and the answer shows the hint or the batch in full",
+        "For a statement that already runs in under a second, test `OPTION (MAXDOP 1)`",
+        "Keep it only when CPU falls and no case regresses",
+        "finalize lists `hinted_candidate` in `deployment_blockers`",
+        "set it once in a variable in front of the statement",
+        "a `TOP (n + 1)` probe counts the qualifying rows up to the limit, and an IF chooses the branch",
+        "Register a case on each side of the limit",
+        'measure the probe batch under "Always finish" in `SKILL.md`, or give it as an alternative labelled not measured',
+    ):
+        assert phrase in finishing, phrase
+    assert "Two exceptions may be part of the lead, when every case was measured with the hint and none regressed" in _reference("cardinality-parameters.md")

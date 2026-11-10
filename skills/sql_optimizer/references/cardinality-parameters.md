@@ -24,10 +24,12 @@ Execute supplied parameters through typed `sp_executesql`, not local `DECLARE` v
 
 Test the plan cache, not only each value. `benchmark_tuning_candidate` with `cross_case={"compile_case": A, "run_case": B}` compiles the plan with case A and measures case B on it. Run it in both directions when two cases differ in selectivity; a candidate that regresses there is rejected. A `sniffed_parameter_differs` finding on an equality seek of a whole unique key is noise: that seek returns one row for any value.
 
+A regressed case is final. `decision.by_metric` gives the verdict of every case on CPU, elapsed time, and logical reads from the same runs: read all three, not only the objective. A case that is worse than the original on CPU or logical reads, beyond noise, rejects the design as it is, also when the other cases are far faster. Add a branch that keeps the original statement for that case's parameter class (an index or view benchmark reports such a case as `unchanged_by_design`), or pick another design. Never explain a regression away, for example as an undercount in the original: a reviewer counts what was measured.
+
 Do not prescribe `OPTION (RECOMPILE)`, `OPTIMIZE FOR`, `OPTIMIZE FOR UNKNOWN`, a Query Store hint, or forced parameterization by reflex:
 
 - recompilation spends CPU and removes plan reuse; it can be appropriate only when execution savings dominate compile cost, so state both numbers: compile CPU per call times calls per second, against the saving per execution;
-- a hint fits the values it was tuned on. Deliver `OPTION (RECOMPILE)`, `OPTIMIZE FOR`, or a join hint only as an alternative, and only with the measured numbers of the parameter pair it makes worse. When one value class is skewed, a branch per class is the lead; do not suggest `OPTIMIZE FOR UNKNOWN` for a catch-all predicate: measured, it picked the worse index;
+- a hint fits the values it was tuned on. Deliver `OPTION (RECOMPILE)`, `OPTIMIZE FOR`, or a join hint only as an alternative, and only with the measured numbers of the parameter pair it makes worse. When one value class is skewed, a branch per class is the lead; do not suggest `OPTIMIZE FOR UNKNOWN` for a catch-all predicate: measured, it picked the worse index. Two exceptions may be part of the lead, when every case was measured with the hint and none regressed: `OPTIMIZE FOR` on a key that the statement resolves itself (joins reference), and the finishing forms below;
 - when the SQL cannot change or cannot be redeployed quickly, give the exact Query Store hint text as a no-redeploy fallback and route it to `sql-plan-enforcer`; do not set it from this skill;
 - Query Store hints and forcing belong to `sql-plan-enforcer`, not this skill; workload-wide index review, overlap, consolidation, and removal belong to `sql-index-manager`, not this skill;
 - Parameter Sensitive Plan optimization, Optional Parameter Plan Optimization, memory-grant feedback, cardinality feedback, batch mode, deferred compilation, and UDF inlining depend on compatibility level, database-scoped configuration, query shape, and observed runtime state.
@@ -43,3 +45,13 @@ For Azure SQL Database, interpret the capability envelope with these concrete ga
 - DOP feedback is capability- and Query-Store-dependent and can remain off even at a qualifying compatibility level.
 
 An applicable or enabled feature is not proof that this query used it. Require an observed dispatcher/variant, feedback state, plan shape, or Query Store evidence before attributing an improvement. If `check_capabilities` cannot verify Azure SQL Database PaaS, compatibility level, configuration, or Query Store state, mark the feature conclusion inconclusive.
+
+## Plan-level finishing
+
+After the design is chosen and measured, test each of these once, as a variant of the finalist. Each is measured on every case, never assumed, and the answer shows the hint or the batch in full.
+
+- **Serial plan.** For a statement that already runs in under a second, test `OPTION (MAXDOP 1)`: a parallel plan can cost more CPU than it saves. Keep it only when CPU falls and no case regresses. The tools class `MAXDOP` as a plan-forcing hint: the numbers stand, and finalize lists `hinted_candidate` in `deployment_blockers`. Say that the hint is part of the measured statement.
+- **Bounds computed once.** A bound that the statement derives for each table (the first and last key of a period): set it once in a variable in front of the statement, `DECLARE @FirstKey int = (SELECT MIN(...) ...)`, and filter each large table on the variables. The variables are not sniffed: check the estimates, and add `OPTIMIZE FOR` a typical period when they are wrong.
+- **Probe before a parameter-sensitive join.** When the parameter decides the row count, a `TOP (n + 1)` probe counts the qualifying rows up to the limit, and an IF chooses the branch: nested loops up to n rows, a hash join above. Register a case on each side of the limit.
+
+The proof tools take a variable set from a scalar subquery in front of one SELECT. When they refuse it in front of IF / ELSE, measure the probe batch under "Always finish" in `SKILL.md`, or give it as an alternative labelled not measured.
