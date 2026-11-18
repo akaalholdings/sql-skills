@@ -1,6 +1,6 @@
 ---
 name: sql-optimizer
-description: Tune or rewrite one Azure SQL Database PaaS query. Give a decisive recommendation with complete SQL, ground it in schema and plan evidence through azure-sql-mcp, and, when policy allows, measure it: prove equivalence, benchmark every parameter case, and test leased indexes.
+description: "Tune or rewrite one Azure SQL Database PaaS query. Give a decisive recommendation with complete SQL, ground it in schema and plan evidence through azure-sql-mcp, and, when policy allows, measure it: prove equivalence, benchmark every parameter case, and test leased indexes."
 metadata:
   version: "3.0.0"
 ---
