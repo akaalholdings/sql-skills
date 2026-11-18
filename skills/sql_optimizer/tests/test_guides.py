@@ -950,6 +950,24 @@ def test_optimizer_reads_plans_by_self_time_and_per_execution_rows() -> None:
     assert "the slow operator, its own elapsed time, and the statement's elapsed time" in CORE_FLAT
 
 
+def test_optimizer_reads_parallel_counters_per_thread_and_never_across_an_exchange() -> None:
+    # Showplan counters are per thread, and the workers above and below an
+    # exchange are not the same ones. Pairing thread numbers, or adding up
+    # thread executions, blames the wrong operator and invents estimate errors.
+    plan = _reference("plan-reading.md")
+    for phrase in (
+        "the thread numbers above and below a Parallelism (exchange) operator are different workers",
+        "the slowest producer thread below an exchange off the elapsed time of every thread above it",
+        "no CPU from below an exchange",
+        "read the branch and its warnings before you blame the operator",
+        "threads add up only on the inner side of a nested loop",
+        "ran 30 times, not 240",
+        "compare `end_of_scans`, `rebinds` and `rewinds` with `thread_executions`",
+        "do not assign it to an operator",
+    ):
+        assert phrase in plan, phrase
+
+
 def test_optimizer_requires_provenance_for_actual_query_plans() -> None:
     plan = _reference("plan-reading.md")
     for phrase in (
