@@ -49,6 +49,20 @@ def test_exact_skill_versions_are_published() -> None:
         assert phrase in _core(SKILLS[skill]), skill
 
 
+def test_frontmatter_plain_scalars_are_valid_yaml() -> None:
+    # An unquoted YAML value cannot hold ": " or " #". A strict parser rejects
+    # the whole frontmatter, so a host that uses one cannot read the skill.
+    for skill, bundle in SKILLS.items():
+        frontmatter = BUNDLES[bundle][0].split("---", 2)[1]
+        for line in frontmatter.strip().splitlines():
+            value = line.split(":", 1)[1].strip()
+            if not value or value[0] in "\"'":
+                continue
+            assert ": " not in value, (skill, line)
+            assert " #" not in value, (skill, line)
+            assert not value.endswith(":"), (skill, line)
+
+
 def test_every_skill_gates_database_and_runtime_before_recall() -> None:
     for skill, bundle in SKILLS.items():
         text = _compact(bundle)
